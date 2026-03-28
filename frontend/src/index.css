@@ -1,0 +1,1144 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
+
+:root {
+  /* PURE NEU BRUTALISM BASE */
+  --bg-base: #faf9f6;
+  /* Cream/Off-white for max contrast */
+  --bg-surface: #ffffff;
+
+  /* Night Black stark structural borders */
+  --border-stark: #0a0a0a;
+  --border-focus: #06b6d4;
+  /* Cyan focus */
+  --border-active: #8b5cf6;
+  /* Violet active */
+
+  --text-primary: #0a0a0a;
+  --text-secondary: #3f3f46;
+  --text-tertiary: #52525b;
+
+  --accent-color: #8b5cf6;
+  /* Bright Violet */
+  --accent-hover: #a855f7;
+  --danger-color: #f43f5e;
+  /* Strong Rose/Red */
+  --success-color: #10b981;
+  /* Strong Emerald */
+
+  --font-family: 'Outfit', -apple-system, sans-serif;
+
+  /* App.tsx Inline Variable Legacy Aliases */
+  --color-accent: var(--accent-color);
+  --color-text-main: var(--text-primary);
+  --color-text-muted: var(--text-secondary);
+  --color-bg: var(--bg-surface);
+  --color-border: var(--border-stark);
+  --color-danger: var(--danger-color);
+  --color-danger-bg: #ffe4e6;
+  --color-border-focus: var(--border-focus);
+
+  /* Brutalist Geometry - strictly sharp */
+  --radius-none: 0px;
+  --radius-sm: 0px;
+  --radius-md: 0px;
+
+  /* Hard Brutalist Shadows (Night Black #0a0a0a, ZERO BLUR) */
+  --brutal-shadow: 4px 4px 0px #0a0a0a;
+  --brutal-shadow-hover: 6px 6px 0px #0a0a0a;
+  --brutal-shadow-active: 2px 2px 0px #0a0a0a;
+
+  --brutal-shadow-lg: 8px 8px 0px #0a0a0a;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+  /* Aggressive Grid pattern behind everything */
+  background-image:
+    linear-gradient(var(--border-stark) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border-stark) 1px, transparent 1px);
+  background-size: 50px 50px;
+  background-position: -1px -1px;
+}
+
+/* Custom Scrollbar - Brutalist Solid Blocks */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-surface);
+  border-left: 2px solid var(--border-stark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-stark);
+  border: 2px solid var(--bg-surface);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-color);
+}
+
+/* Typography Mastery - High Contrast & Bold */
+h1,
+h2,
+h3,
+h4 {
+  font-weight: 900;
+  color: var(--text-primary);
+  letter-spacing: -0.05em;
+  text-transform: uppercase;
+  line-height: 1.1;
+}
+
+h1 {
+  font-size: 3.5rem;
+}
+
+h2 {
+  font-size: 2rem;
+}
+
+h3 {
+  font-size: 1.5rem;
+}
+
+.text-muted {
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.text-xs {
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 800;
+  color: var(--text-tertiary);
+}
+
+.text-sm {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+ 
+/* Utilities */
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+ 
+@media (max-width: 600px) {
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------------------------------------------------
+   DASHBOARD LAYOUT (Pure Neu Brutalist)
+--------------------------------------------------- */
+.dashboard-layout {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  background: transparent;
+}
+
+/* Sidebar - Solid Paper Box */
+.sidebar {
+  width: 280px;
+  background: var(--bg-surface);
+  border-right: 3px solid var(--border-stark);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  z-index: 20;
+  box-shadow: 4px 0px 0px var(--border-stark);
+  /* Drop shadow slightly spilling right */
+}
+
+.sidebar-header {
+  height: 76px;
+  padding: 0 1.75rem;
+  display: flex;
+  align-items: center;
+  border-bottom: 3px solid var(--border-stark);
+  background: var(--accent-color);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 900;
+  font-size: 1.5rem;
+  text-transform: uppercase;
+  color: var(--bg-surface);
+  letter-spacing: -0.05em;
+  /* White text shadow on accent background for pop */
+  text-shadow: 2px 2px 0px var(--border-stark);
+}
+
+.sidebar-nav {
+  padding: 1.5rem 1.25rem;
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background: var(--bg-surface);
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.85rem 1.15rem;
+  border: 2px solid transparent;
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.15s ease-out;
+}
+
+.nav-item:hover {
+  border-color: var(--border-stark);
+  transform: translate(-3px, -3px);
+  box-shadow: var(--brutal-shadow);
+  background: #f4f4f5;
+}
+
+.nav-item.active {
+  background: var(--accent-color);
+  color: var(--bg-surface);
+  border: 2px solid var(--border-stark);
+  box-shadow: var(--brutal-shadow);
+  transform: translate(-2px, -2px);
+}
+
+.nav-item.active svg {
+  color: var(--bg-surface);
+}
+
+/* Main Stage */
+.main-stage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  background: transparent;
+}
+
+.stage-header {
+  height: 76px;
+  padding: 0 3.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 3px solid var(--border-stark);
+  background: var(--bg-surface);
+  z-index: 10;
+  box-shadow: 0px 4px 0px var(--border-stark);
+}
+
+.stage-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4rem 3.5rem;
+  position: relative;
+  background: transparent;
+  /* lets grid show through */
+}
+
+.content-container {
+  max-width: 860px;
+  margin: 0 auto;
+  padding-bottom: 5rem;
+}
+
+/* ---------------------------------------------------
+   HERO / LANDING PAGE
+--------------------------------------------------- */
+/* ---------------------------------------------------
+   LANDING PAGE (Split Editorial Brutalism)
+--------------------------------------------------- */
+.landing-page {
+  width: 100vw;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* Allow scroll if content is taller than viewport */
+  background-color: var(--bg-base);
+  /* Cream */
+  color: var(--text-primary);
+}
+
+/* Diagonal Split Backdrop */
+.landing-backdrop-diagonal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--border-stark);
+  /* Night black */
+  z-index: 1;
+  clip-path: polygon(55% 0, 100% 0, 100% 100%, 15% 100%);
+  /* Matches the wide slanted angle of the reference */
+}
+
+@media (max-width: 1024px) {
+  .landing-backdrop-diagonal {
+    width: 100%;
+    height: 70%;
+    top: auto;
+    bottom: 0;
+    clip-path: polygon(0 15%, 100% 0, 100% 100%, 0 100%);
+  }
+}
+
+/* Navbar */
+.landing-nav {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 4rem;
+  /* Restored padding so it's not smashed */
+  border-bottom: 4px solid var(--border-stark);
+  background: var(--bg-base);
+  /* Solid cream to sit over the diagonal */
+  flex-shrink: 0;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 900;
+  font-size: 1.15rem;
+  text-transform: uppercase;
+}
+
+.nav-links {
+  display: flex;
+  gap: 2.5rem;
+}
+
+.nav-link {
+  font-weight: 800;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: color 0.1s;
+}
+
+.nav-link:hover {
+  color: var(--accent-color);
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.nav-actions .btn {
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  border-width: 2px;
+  box-shadow: 2px 2px 0px var(--border-stark);
+}
+
+.nav-actions .btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0px var(--brutal-shadow-hover);
+}
+
+.nav-actions .btn:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0px var(--border-stark);
+}
+
+.user-greeting {
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+/* Split Hero Main Content */
+.split-hero {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  flex: 1;
+  /* Expands to fill available space */
+  align-items: center;
+  padding: 0 4rem;
+  /* minimal vertical padding */
+  min-height: 0;
+}
+
+.hero-content-left {
+  flex: 1;
+  max-width: 600px;
+  padding-right: 4rem;
+}
+
+.hero-title {
+  font-size: 3.8rem;
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  margin-bottom: 0.75rem;
+  text-transform: capitalize;
+  /* As requested by editorial style */
+}
+
+.hero-subtitle-left {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  line-height: 1.4;
+  margin-bottom: 1.25rem;
+  max-width: 90%;
+}
+
+.hero-ctas {
+  display: flex;
+  gap: 1rem;
+}
+
+.hero-content-right {
+  flex: 1;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* User logged out illustration */
+.hero-illustration {
+  position: relative;
+  width: 100%;
+  height: 280px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform: scale(0.85);
+  /* Shrink illustration */
+}
+
+.abstract-card {
+  position: absolute;
+  background: var(--bg-surface);
+  border: 4px solid var(--border-stark);
+  padding: 2rem;
+  box-shadow: 12px 12px 0px var(--border-stark);
+  transition: transform 0.2s;
+}
+
+.blue-card {
+  width: 300px;
+  height: 220px;
+  top: 20px;
+  right: 10%;
+  transform: rotate(4deg);
+  z-index: 2;
+}
+
+.violet-card {
+  width: 250px;
+  height: 250px;
+  bottom: 0;
+  left: 10%;
+  background: #f4f4f5;
+  transform: rotate(-3deg);
+  z-index: 3;
+}
+
+.illustration-icon {
+  color: var(--border-stark);
+  margin-bottom: 1.5rem;
+}
+
+.skeleton-line {
+  height: 12px;
+  background: #000;
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+.skeleton-line.short {
+  width: 60%;
+}
+
+.skeleton-line.medium {
+  width: 85%;
+}
+
+/* Hero Card (Logged IN tool display) */
+.hero-card {
+  background: var(--bg-surface);
+  border: 4px solid var(--border-stark);
+  text-align: left;
+  width: 100%;
+  max-width: 540px;
+  z-index: 10;
+  box-shadow: 16px 16px 0px rgba(0, 0, 0, 0.2);
+  /* Over Black, box shadow needs to be visible, or use white/cyan */
+}
+
+/* If hero-card is over the black diagonal, give it a cyan pop shadow */
+.hero-card {
+  box-shadow: 12px 12px 0px var(--border-focus);
+}
+
+.hero-tabs {
+  display: flex;
+  border-bottom: 4px solid var(--border-stark);
+  background: var(--bg-surface);
+}
+
+.hero-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  padding: 1.25rem 1rem;
+  background: transparent;
+  border: none;
+  border-right: 4px solid var(--border-stark);
+  color: var(--text-primary);
+  font-weight: 900;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.1s;
+}
+
+.hero-tab:last-child {
+  border-right: none;
+}
+
+.hero-tab:hover:not(.active) {
+  background: #f4f4f5;
+}
+
+.hero-tab.active {
+  background: var(--border-focus);
+  /* Cyan solid */
+  color: var(--text-primary);
+}
+
+.hero-card-content {
+  padding: 2rem;
+}
+
+/* The upload zone as a chunky dashed box */
+.upload-zone.clean {
+  border: 4px dashed var(--border-stark);
+  padding: 2.5rem 1.5rem;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  text-align: center;
+  background: var(--bg-base);
+  transition: all 0.2s;
+}
+
+.upload-zone.clean:hover {
+  border-color: var(--border-focus);
+  background: var(--bg-surface);
+  transform: translate(-4px, -4px);
+  box-shadow: 6px 6px 0px var(--border-focus);
+}
+
+.icon-ring {
+  width: 72px;
+  height: 72px;
+  border: 4px solid var(--border-stark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-surface);
+  box-shadow: 4px 4px 0px var(--border-stark);
+}
+
+.hero-textarea.clean {
+  width: 100%;
+  border: 4px solid var(--border-stark);
+  background: var(--bg-base);
+  padding: 1.5rem;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 1.1rem;
+  font-weight: 700;
+  resize: none;
+  height: 160px;
+  transition: all 0.2s;
+  box-shadow: 4px 4px 0px var(--border-stark);
+}
+
+.hero-textarea.clean:focus {
+  outline: none;
+  border-color: var(--border-focus);
+  box-shadow: 6px 6px 0px var(--border-focus);
+  transform: translate(-2px, -2px);
+}
+
+/* Feature Cards Section (Bottom overlapping) */
+.feature-cards-section {
+  position: relative;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+  padding: 0 4rem 1.25rem 4rem;
+  margin-top: 2rem;
+  flex-shrink: 0;
+  /* Let cards take their intrinsic height */
+}
+
+@media (max-width: 1024px) {
+  .split-hero {
+    flex-direction: column;
+    padding: 2rem;
+  }
+
+  .hero-content-left {
+    padding-right: 0;
+    margin-bottom: 4rem;
+  }
+
+  .feature-cards-section {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 2rem;
+    margin-top: 2rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .feature-cards-section {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-title {
+    font-size: 3.5rem;
+  }
+}
+
+.feature-card {
+  background: var(--border-stark);
+  /* Night black card */
+  color: var(--bg-surface);
+  border: 2px solid #52525b;
+  /* Visible dark grey border over black background */
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--border-focus);
+}
+
+.feature-icon {
+  margin-bottom: 0.5rem;
+  color: #fff;
+  width: 18px;
+  height: 18px;
+}
+
+.feature-card h3 {
+  font-size: 1rem;
+  font-weight: 800;
+  margin: 0 0 0.5rem 0;
+  color: var(--bg-surface);
+  /* Force white color in brutalist dark mode */
+}
+
+.feature-card p {
+  color: #a1a1aa;
+  /* Muted gray text for dark bg */
+  font-size: 0.75rem;
+  line-height: 1.25;
+  flex-grow: 1;
+  margin-bottom: 0.75rem;
+}
+
+.feature-link {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  transition: color 0.15s;
+}
+
+.feature-card:hover .feature-link {
+  color: var(--border-focus);
+}
+
+/* ---------------------------------------------------
+   CARDS & CONTAINERS 
+--------------------------------------------------- */
+.section-panel {
+  background: var(--bg-surface);
+  border: 3px solid var(--border-stark);
+  box-shadow: var(--brutal-shadow-lg);
+  padding: 2.5rem;
+  margin-bottom: 3rem;
+  position: relative;
+}
+
+/* A decorative brutalist nail/screw in top right */
+.section-panel::after {
+  content: '';
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 12px;
+  height: 12px;
+  background: var(--bg-surface);
+  border: 3px solid var(--border-stark);
+  border-radius: 50%;
+  /* The ONLY round thing */
+}
+
+.panel-header {
+  margin-bottom: 2.5rem;
+  border-bottom: 3px dotted var(--border-stark);
+  padding-bottom: 1.5rem;
+}
+
+.panel-header h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-bottom: 0.5rem;
+}
+
+.item-card {
+  background: var(--bg-base);
+  border: 3px solid var(--border-stark);
+  padding: 1.75rem;
+  margin-bottom: 1.25rem;
+  display: flex;
+  gap: 1.5rem;
+  transition: all 0.15s ease-out;
+  box-shadow: var(--brutal-shadow);
+}
+
+.item-card:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: var(--brutal-shadow-hover);
+  background: #fff;
+}
+
+.item-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* ---------------------------------------------------
+   FORMS & INPUTS 
+--------------------------------------------------- */
+.input,
+.textarea {
+  width: 100%;
+  background: var(--bg-surface);
+  border: 3px solid var(--border-stark);
+  padding: 0.85rem 1.15rem;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 1.05rem;
+  font-weight: 700;
+  transition: all 0.1s;
+  box-shadow: 2px 2px 0px var(--border-stark);
+}
+
+.input:focus,
+.textarea:focus {
+  outline: none;
+  background: #fff;
+  border-color: var(--border-stark);
+  transform: translate(-2px, -2px);
+  /* Pops out hard with accent color shadow on focus */
+  box-shadow: 6px 6px 0px var(--border-focus);
+}
+
+.textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+/* Form Groups */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+.input-stacked {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* ---------------------------------------------------
+   BUTTONS (Pure Brutalism)
+--------------------------------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1.75rem;
+  font-size: 1.05rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  cursor: pointer;
+  border: 3px solid var(--border-stark);
+  transition: all 0.1s ease-out;
+  white-space: nowrap;
+  box-shadow: var(--brutal-shadow);
+  color: var(--text-primary);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  pointer-events: none;
+  background: #d4d4d8 !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.btn-primary {
+  background: var(--border-focus);
+  /* Cyber Cyan background */
+}
+
+.btn-primary:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: var(--brutal-shadow-hover);
+  background: #22d3ee;
+}
+
+.btn-primary:active {
+  transform: translate(2px, 2px);
+  box-shadow: var(--brutal-shadow-active);
+}
+
+.btn-secondary {
+  background: var(--bg-surface);
+}
+
+.btn-secondary:hover {
+  transform: translate(-2px, -2px);
+  background: #f4f4f5;
+  box-shadow: var(--brutal-shadow-hover);
+}
+
+.btn-secondary:active {
+  transform: translate(2px, 2px);
+  box-shadow: var(--brutal-shadow-active);
+}
+
+.btn-icon-only {
+  padding: 0.65rem;
+  color: var(--text-primary);
+  background: var(--bg-surface);
+  border: 3px solid var(--border-stark);
+  cursor: pointer;
+  box-shadow: 3px 3px 0px var(--border-stark);
+  transition: all 0.1s;
+}
+
+.btn-icon-only:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0px var(--border-stark);
+  background: var(--border-focus);
+}
+
+.btn-icon-danger:hover {
+  background: var(--danger-color);
+  color: #fff;
+}
+
+/* ---------------------------------------------------
+   BADGES & TRACEABILITY TABLE
+--------------------------------------------------- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.85rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  background: var(--accent-color);
+  color: var(--bg-surface);
+  border: 2px solid var(--border-stark);
+  box-shadow: 3px 3px 0px var(--border-stark);
+}
+
+.badge-danger {
+  background: var(--danger-color);
+  color: #fff;
+}
+
+.table-container {
+  background: var(--bg-surface);
+  border: 3px solid var(--border-stark);
+  box-shadow: var(--brutal-shadow-lg);
+  overflow: hidden;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  background: var(--bg-base);
+  padding: 1.25rem 1.5rem;
+  font-size: 0.95rem;
+  font-weight: 900;
+  color: var(--text-primary);
+  border-bottom: 3px solid var(--border-stark);
+  border-right: 3px solid var(--border-stark);
+  text-transform: uppercase;
+}
+
+th:last-child {
+  border-right: none;
+}
+
+td {
+  padding: 1.5rem;
+  border-bottom: 2px solid var(--border-stark);
+  border-right: 2px solid var(--border-stark);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: var(--bg-surface);
+  transition: all 0.1s ease;
+}
+
+td:last-child {
+  border-right: none;
+}
+
+tr:hover td {
+  background: var(--bg-base);
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+/* ---------------------------------------------------
+   UTILITIES
+--------------------------------------------------- */
+.fade-in {
+  animation: punchIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  opacity: 0;
+}
+
+@keyframes punchIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.items-start {
+  align-items: flex-start;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.justify-end {
+  justify-content: flex-end;
+}
+
+.flex-shrink-0 {
+  flex-shrink: 0;
+}
+
+.gap-2 {
+  gap: 0.5rem;
+}
+
+.gap-3 {
+  gap: 0.75rem;
+}
+
+.gap-4 {
+  gap: 1rem;
+}
+
+.mt-2 {
+  margin-top: 0.5rem;
+}
+
+.mt-4 {
+  margin-top: 1rem;
+}
+
+.mt-8 {
+  margin-top: 2rem;
+}
+
+.mb-1 {
+  margin-bottom: 0.25rem;
+}
+
+.mb-2 {
+  margin-bottom: 0.5rem;
+}
+
+.mb-4 {
+  margin-bottom: 1rem;
+}
+
+.mb-6 {
+  margin-bottom: 1.5rem;
+}
+
+.ml-3 {
+  margin-left: 0.75rem;
+}
+
+.ml-4 {
+  margin-left: 1rem;
+}
+
+.ml-auto {
+  margin-left: auto;
+}
+
+.mr-4 {
+  margin-right: 1rem;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.font-semibold {
+  font-weight: 700;
+}
+
+.font-medium {
+  font-weight: 600;
+}
+
+.text-lg {
+  font-size: 1.15rem;
+}
+
+.m-0 {
+  margin: 0;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 900px) {
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Loading State Overlay */
+.loading-screen {
+  position: absolute;
+  inset: 0;
+  background: var(--bg-base);
+  /* solid paper */
+  z-index: 50;
+}
+
+.skeleton {
+  background: var(--text-secondary);
+  animation: pulse-stark 0.8s infinite alternate;
+  border: 2px solid var(--border-stark);
+}
+
+@keyframes pulse-stark {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0.5;
+  }
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 5rem 2rem;
+  text-align: center;
+  border: 4px dashed var(--border-stark);
+  background: var(--bg-base);
+  font-weight: 900;
+  text-transform: uppercase;
+  font-size: 1.25rem;
+  color: var(--text-secondary);
+}
