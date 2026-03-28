@@ -201,6 +201,18 @@ h3 {
   background: var(--bg-surface);
 }
 
+/* Scrollbar styling for sidebar history */
+.sidebar-nav::-webkit-scrollbar {
+  width: 4px;
+}
+.sidebar-nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sidebar-nav::-webkit-scrollbar-thumb {
+  background: var(--border-stark);
+  border-radius: 2px;
+}
+
 .nav-item {
   display: flex;
   align-items: center;
