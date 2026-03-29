@@ -53,7 +53,6 @@ const Signup = () => {
 
   return (
     <div className="auth-split-container">
-      {/* Add reverse-layout class here to flip sides for signup */}
       <div className="auth-split-wrapper">
 
         {/* Sign up form area */}
@@ -143,7 +142,7 @@ const Signup = () => {
           </div>
         </div>
 
-        {/* Visual area for Signup (Right side on code, rendered left side on screen due to row-reverse) */}
+        {/* Visual area */}
         <div className="auth-visual-section">
           <div className="visual-content">
             <span className="visual-badge">Community</span>
