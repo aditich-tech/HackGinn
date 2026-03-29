@@ -55,7 +55,7 @@ public class ExportService {
 
             doc.add(new Paragraph("\n"));
             doc.add(new Paragraph("Product Requirement Document (PRD)", headingFont));
-            doc.add(new Paragraph(dto.getPrd(), bodyFont));
+            addPrdToPdf(doc, dto.getPrd(), headingFont, bodyFont);
 
         } catch (Exception e) {
             throw new RuntimeException("PDF generation failed", e);
@@ -92,11 +92,47 @@ public class ExportService {
                 p.createRun().setText("• [" + m.getStage() + "] " + m.getPhase() + ": " + m.getDescription());
             }
 
-            addDocxParagraph(docx, "Product Requirement Document (PRD)", dto.getPrd());
+            addPrdToDocx(docx, dto.getPrd());
 
             docx.write(out);
         } catch (Exception e) {
             throw new RuntimeException("DOCX generation failed", e);
+        }
+    }
+
+    private void addPrdToPdf(Document doc, String prd, Font headingFont, Font bodyFont) throws DocumentException {
+        if (prd == null) return;
+        String[] lines = prd.split("\n");
+        for (String line : lines) {
+            if (line.trim().startsWith("#")) {
+                String clean = line.replace("#", "").trim();
+                doc.add(new Paragraph(clean, headingFont));
+            } else if (!line.trim().isEmpty()) {
+                doc.add(new Paragraph(line.trim(), bodyFont));
+            }
+        }
+    }
+
+    private void addPrdToDocx(XWPFDocument doc, String prd) {
+        if (prd == null) return;
+        
+        XWPFParagraph h = doc.createParagraph();
+        XWPFRun hr = h.createRun();
+        hr.setText("Product Requirement Document (PRD)");
+        hr.setBold(true);
+        hr.setFontSize(14);
+
+        String[] lines = prd.split("\n");
+        for (String line : lines) {
+            XWPFParagraph p = doc.createParagraph();
+            XWPFRun run = p.createRun();
+            if (line.trim().startsWith("#")) {
+                run.setText(line.replace("#", "").trim());
+                run.setBold(true);
+                run.setFontSize(12);
+            } else {
+                run.setText(line.trim());
+            }
         }
     }
 

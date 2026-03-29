@@ -3,7 +3,8 @@ import { Routes, Route, Link, useNavigate, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import ProtectedRoute from './components/ProtectedRoute';
-import { generateIdea, uploadText, updateBrd, downloadPdf, downloadDocx, BRD } from './api/api';
+import { generateIdea, uploadText, updateBrd, downloadPdf, downloadDocx, getMyIdeas, BRD } from './api/api';
+import ReactMarkdown from 'react-markdown';
 import {
   FileText, UploadCloud, Loader2, Save, XCircle, Download,
   LayoutDashboard, ListChecks, Users, AlertTriangle, Clock,
@@ -87,10 +88,28 @@ function App() {
     teamSize: 1, skillLevel: 'Intermediate', projectType: 'Software',
     platform: '', targetMarket: '', techStack: '', domain: '', constraints: '', hackathonHours: 24,
   });
+    const [history, setHistory] = useState<BRD[]>([]);
+    const [historyLoading, setHistoryLoading] = useState(false);
+    const { currentUser, logout } = useAuth();
 
-  const navigate = useNavigate();
-  // Fix #9 — use logout from AuthContext instead of calling signOut(auth) directly
-  const { currentUser, logout } = useAuth();
+    const fetchHistory = React.useCallback(async () => {
+      if (!currentUser) return;
+      setHistoryLoading(true);
+      try {
+        const data = await getMyIdeas();
+        setHistory(data);
+      } catch (err) {
+        console.error('Failed to fetch history:', err);
+      } finally {
+        setHistoryLoading(false);
+      }
+    }, [currentUser]);
+
+    React.useEffect(() => {
+      fetchHistory();
+    }, [brd, fetchHistory]);
+
+    const navigate = useNavigate();
   const activeBrd = isEditing ? editDraft : brd;
 
   // ── Handlers ──────────────────────────────────────────────────────────────
@@ -347,8 +366,8 @@ function App() {
             onChange={e => setEditDraft({ ...editDraft!, prd: e.target.value })}
           />
         ) : (
-          <div style={{ whiteSpace: 'pre-wrap', lineHeight: '1.8', color: 'var(--color-text-main)', fontSize: '1.05rem' }}>
-            {activeBrd?.prd || 'No PRD generated for this idea.'}
+          <div className="markdown-content" style={{ lineHeight: '1.8', color: 'var(--color-text-main)', fontSize: '1.05rem' }}>
+            <ReactMarkdown>{activeBrd?.prd || 'No PRD generated for this idea.'}</ReactMarkdown>
           </div>
         )}
       </div></div>
@@ -559,9 +578,31 @@ function App() {
                 </div>
               );
             })}
+
+            {/* My History / Saved Projects Section */}
+            <div className="text-xs mb-2 mt-8 ml-3" style={{ opacity: 0.5, fontWeight: 600, letterSpacing: '0.05em' }}>PROJECT LIBRARY</div>
+            {historyLoading ? (
+              <div className="skeleton-list px-3">{[1, 2, 3].map(i => <div key={i} className="skeleton h-8 w-full mb-2" />)}</div>
+            ) : history.length === 0 ? (
+              <p className="text-xs text-muted ml-3 opacity-60">No saved projects yet.</p>
+            ) : (
+              <div className="sidebar-history-list">
+                {history.map(item => (
+                  <div 
+                    key={item.id} 
+                    className={`nav-item history-item ${brd?.id === item.id ? 'active' : ''}`}
+                    style={{ fontSize: '0.8rem', padding: '0.5rem 1rem' }}
+                    onClick={() => { setBrd(item); setIdeas([]); setActiveTab('summary'); }}
+                  >
+                    <FileText size={14} className="flex-shrink-0" />
+                    <span className="truncate">{item.title}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </nav>
           <div style={{ padding: '1.25rem', borderTop: '2px solid var(--border-stark)', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            {/* Fix #9 — logout() from AuthContext */}
+            <button className="btn btn-secondary w-full" style={{ fontSize: '0.9rem', padding: '0.6rem' }} onClick={() => { setBrd(null); setIdeas([]); navigate('/'); }}><PlusCircle size={16} /> New Blueprint</button>
             <button className="btn btn-secondary w-full" style={{ fontSize: '0.9rem', padding: '0.6rem' }} onClick={() => logout()}><LogOut size={16} /> Sign Out</button>
           </div>
         </aside>
