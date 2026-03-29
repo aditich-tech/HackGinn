@@ -22,7 +22,7 @@ const Signup = () => {
       setLoading(true);
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(userCredential.user, { displayName: fullName });
-      navigate('/dashboard');
+      navigate('/');
     } catch (err: any) {
       if (err.code === 'auth/email-already-in-use') {
         setError("This email is already in use.");
@@ -42,7 +42,7 @@ const Signup = () => {
       setError("");
       setLoading(true);
       await signInWithPopup(auth, googleProvider);
-      navigate('/dashboard');
+      navigate('/');
     } catch (err: any) {
       setError("Failed to sign up with Google.");
       console.error(err);

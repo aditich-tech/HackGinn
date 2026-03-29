@@ -168,7 +168,7 @@ const IdeaCard: React.FC<IdeaCardProps> = ({ idea, index }) => {
                     {idea.features.map((feat, i) => (
                       <li key={i} className="flex gap-3 items-start">
                         <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-accent-secondary shrink-0" />
-                        <span className="text-text-muted">{feat.description}</span>
+                        <span className="text-text-muted">{feat}</span>
                       </li>
                     ))}
                   </ul>

@@ -18,6 +18,7 @@ public class BlueprintDto {
     private List<String> targetAudience;
     private List<String> challenges;
     private List<Milestone> roadmap;
+    private String prd;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

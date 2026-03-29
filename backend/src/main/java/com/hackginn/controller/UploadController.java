@@ -1,59 +1,43 @@
 package com.hackginn.controller;
 
+import com.hackginn.dto.BlueprintDto;
 import com.hackginn.dto.UploadTextRequest;
-import com.hackginn.service.GroqService;
+import com.hackginn.service.IdeaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import com.lowagie.text.pdf.PdfReader;
-import com.lowagie.text.pdf.parser.PdfTextExtractor;
 
-import java.io.IOException;
-import java.util.Map;
+
 
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
 public class UploadController {
 
-    private final GroqService groqService;
+    private final IdeaService ideaService;
 
     @PostMapping("/upload-text")
-    public ResponseEntity<Map<String, String>> uploadText(@Valid @RequestBody UploadTextRequest request) {
-        String extracted = groqService.extractThemeData(request.getContent());
-        return ResponseEntity.ok(Map.of("extracted", extracted));
+    public ResponseEntity<BlueprintDto> uploadText(@Valid @RequestBody UploadTextRequest request,
+                                                 @AuthenticationPrincipal Jwt jwt) {
+        String userId = jwt != null ? jwt.getSubject() : null;
+        // Fix #2 — call generateAndSaveFromPrompt instead of extractThemeData for a full document
+        BlueprintDto blueprint = ideaService.generateAndSaveFromPrompt(request.getContent(), userId);
+        return ResponseEntity.ok(blueprint);
     }
 
-    @PostMapping("/upload")
-    public ResponseEntity<Map<String, String>> uploadFile(@RequestParam("file") MultipartFile file) throws IOException {
-        String content = "";
-        String filename = file.getOriginalFilename();
-
-        if (filename == null) return ResponseEntity.badRequest().build();
-
-        if (filename.endsWith(".txt")) {
-            content = new String(file.getBytes());
-        } else if (filename.endsWith(".pdf")) {
-            try (PdfReader reader = new PdfReader(file.getInputStream())) {
-                PdfTextExtractor extractor = new PdfTextExtractor(reader);
-                StringBuilder sb = new StringBuilder();
-                for (int i = 1; i <= reader.getNumberOfPages(); i++) {
-                    sb.append(extractor.getTextFromPage(i));
-                }
-                content = sb.toString();
-            }
-        } else if (filename.endsWith(".docx")) {
-            try (XWPFDocument doc = new XWPFDocument(file.getInputStream());
-                 XWPFWordExtractor extractor = new XWPFWordExtractor(doc)) {
-                content = extractor.getText();
-            }
+    @PostMapping("/upload-file")
+    public ResponseEntity<BlueprintDto> uploadFile(@RequestParam("file") org.springframework.web.multipart.MultipartFile file,
+                                                 @AuthenticationPrincipal Jwt jwt) {
+        String userId = jwt != null ? jwt.getSubject() : null;
+        try {
+            String content = new String(file.getBytes());
+            BlueprintDto blueprint = ideaService.generateAndSaveFromPrompt(content, userId);
+            return ResponseEntity.ok(blueprint);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to process file: " + e.getMessage());
         }
-
-        String extracted = groqService.extractThemeData(content);
-        return ResponseEntity.ok(Map.of("extracted", extracted));
     }
 }

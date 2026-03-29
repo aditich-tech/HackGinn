@@ -20,7 +20,7 @@ const Login = () => {
       setError("");
       setLoading(true);
       await signInWithEmailAndPassword(auth, email, password);
-      navigate('/dashboard');
+      navigate('/');
     } catch (err: any) {
       setError("Incorrect email or password.");
       console.error(err);
@@ -34,7 +34,7 @@ const Login = () => {
       setError("");
       setLoading(true);
       await signInWithPopup(auth, googleProvider);
-      navigate('/dashboard');
+      navigate('/');
     } catch (err: any) {
       setError("Failed to log in with Google.");
       console.error(err);

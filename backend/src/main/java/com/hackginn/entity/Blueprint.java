@@ -53,6 +53,9 @@ public class Blueprint {
     private List<Milestone> roadmap;
 
     @Column(columnDefinition = "TEXT")
+    private String prd;
+
+    @Column(columnDefinition = "TEXT")
     private String originalPrompt;
 
     @Column(nullable = false, updatable = false)

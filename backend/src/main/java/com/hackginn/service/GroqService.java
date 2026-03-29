@@ -4,15 +4,18 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hackginn.dto.BlueprintDto;
 import com.hackginn.entity.Milestone;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +30,13 @@ public class GroqService {
 
     @Value("${groq.model}")
     private String model;
+
+    @PostConstruct
+    public void validateConfig() {
+        if (apiKey == null || apiKey.trim().isEmpty() || apiKey.contains("${")) {
+            log.error("GROQ_API_KEY is not configured! App will fail on LLM calls.");
+        }
+    }
 
     private static final String SYSTEM_PROMPT = """
             You are HackGinn, an expert hackathon mentor.
@@ -44,7 +54,8 @@ public class GroqService {
               "challenges": ["string", "string"],
               "roadmap": [
                 { "stage": "string", "phase": "string", "description": "string" }
-              ]
+              ],
+              "prd": "string (Detailed Product Requirement Document: Overview, Personas, Functional Requirements, Success Metrics)"
             }
             - features: 4-6 core features
             - techStack: specific tools and frameworks
@@ -56,7 +67,8 @@ public class GroqService {
             Every generation MUST explore a unique angle or creative twist on the problem domain.
             """;
 
-    public BlueprintDto generateBlueprint(String userPrompt) {
+    @Async("groqTaskExecutor")
+    public CompletableFuture<BlueprintDto> generateBlueprint(String userPrompt) {
         Map<String, Object> requestBody = Map.of(
                 "model", model,
                 "messages", List.of(
@@ -76,7 +88,7 @@ public class GroqService {
                 .bodyToMono(String.class)
                 .block();
 
-        return parseGroqResponse(rawResponse);
+        return CompletableFuture.completedFuture(parseGroqResponse(rawResponse));
     }
 
     public String extractThemeData(String rawText) {
@@ -115,7 +127,16 @@ public class GroqService {
             JsonNode root = objectMapper.readTree(rawResponse);
             String content = root.path("choices").get(0).path("message").path("content").asText();
 
-            // Strip any accidental markdown fences
+            // Fix #12 — Robustly extract JSON block even if LLM adds prose
+            int start = content.indexOf('{');
+            int end = content.lastIndexOf('}');
+            if (start == -1 || end == -1) {
+                log.error("No valid JSON object found in Groq response: {}", content);
+                throw new RuntimeException("AI response did not contain a valid JSON blueprint");
+            }
+            content = content.substring(start, end + 1);
+
+            // Strip any accidental markdown fences (redundant after substring but safe)
             content = content.replaceAll("```json", "").replaceAll("```", "").trim();
 
             JsonNode blueprint = objectMapper.readTree(content);
@@ -135,11 +156,13 @@ public class GroqService {
                     .targetAudience(readStringList(blueprint, "targetAudience"))
                     .challenges(readStringList(blueprint, "challenges"))
                     .roadmap(roadmap)
+                    .prd(blueprint.path("prd").asText())
                     .build();
 
         } catch (Exception e) {
-            log.error("Failed to parse Groq blueprint response: {}", rawResponse, e);
-            throw new RuntimeException("Failed to parse AI response into blueprint. Raw: " + rawResponse);
+            log.error("Failed to parse Groq blueprint response. Error: {}", e.getMessage());
+            // Fix #12 — Scrub raw response from client-facing exception message for security/cleanliness
+            throw new RuntimeException("Failed to parse AI response into a valid project blueprint");
         }
     }
 

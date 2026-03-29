@@ -17,7 +17,6 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class IdeaController {
 
     private final IdeaService ideaService;

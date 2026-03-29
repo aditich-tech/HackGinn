@@ -4,6 +4,7 @@ import com.hackginn.dto.BlueprintDto;
 import com.hackginn.dto.GenerateRequest;
 import com.hackginn.entity.Blueprint;
 import com.hackginn.exception.ResourceNotFoundException;
+import com.hackginn.exception.UnauthorizedException;
 import com.hackginn.repository.BlueprintRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,7 +32,12 @@ public class IdeaService {
 
     public BlueprintDto generateAndSave(GenerateRequest request, String userId) {
         String prompt = buildPrompt(request);
-        BlueprintDto dto = groqService.generateBlueprint(prompt);
+        return generateAndSaveFromPrompt(prompt, userId);
+    }
+
+    public BlueprintDto generateAndSaveFromPrompt(String prompt, String userId) {
+        // Fix #5 — now GroqService is @Async, so we join() to wait for result synchronously in the service layer
+        BlueprintDto dto = groqService.generateBlueprint(prompt).join();
 
         Blueprint entity = Blueprint.builder()
                 .userId(userId)
@@ -42,6 +48,7 @@ public class IdeaService {
                 .targetAudience(dto.getTargetAudience())
                 .challenges(dto.getChallenges())
                 .roadmap(dto.getRoadmap())
+                .prd(dto.getPrd())
                 .originalPrompt(prompt)
                 .build();
 
@@ -58,7 +65,8 @@ public class IdeaService {
                 .orElseThrow(() -> new ResourceNotFoundException("Blueprint not found with id: " + id));
         
         if (entity.getUserId() != null && !entity.getUserId().equals(userId)) {
-             throw new RuntimeException("Unauthorized access to Blueprint");
+             // Fix #7 — use 403 Forbidden mapping
+             throw new UnauthorizedException("Unauthorized access to Blueprint");
         }
         return toDto(entity);
     }
@@ -75,7 +83,8 @@ public class IdeaService {
                 .orElseThrow(() -> new ResourceNotFoundException("Blueprint not found with id: " + id));
 
         if (entity.getUserId() != null && !entity.getUserId().equals(userId)) {
-             throw new RuntimeException("Unauthorized access to Blueprint");
+             // Fix #7 — use 403 Forbidden mapping
+             throw new UnauthorizedException("Unauthorized access to Blueprint");
         }
 
         if (updates.getTitle() != null)          entity.setTitle(updates.getTitle());
@@ -85,6 +94,7 @@ public class IdeaService {
         if (updates.getTargetAudience() != null) entity.setTargetAudience(updates.getTargetAudience());
         if (updates.getChallenges() != null)     entity.setChallenges(updates.getChallenges());
         if (updates.getRoadmap() != null)        entity.setRoadmap(updates.getRoadmap());
+        if (updates.getPrd() != null)            entity.setPrd(updates.getPrd());
 
         return toDto(blueprintRepository.save(entity));
     }
@@ -99,6 +109,7 @@ public class IdeaService {
                 .targetAudience(e.getTargetAudience())
                 .challenges(e.getChallenges())
                 .roadmap(e.getRoadmap())
+                .prd(e.getPrd())
                 .createdAt(e.getCreatedAt())
                 .updatedAt(e.getUpdatedAt())
                 .build();

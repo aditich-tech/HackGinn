@@ -53,6 +53,10 @@ public class ExportService {
                 ));
             }
 
+            doc.add(new Paragraph("\n"));
+            doc.add(new Paragraph("Product Requirement Document (PRD)", headingFont));
+            doc.add(new Paragraph(dto.getPrd(), bodyFont));
+
         } catch (Exception e) {
             throw new RuntimeException("PDF generation failed", e);
         } finally {
@@ -87,6 +91,8 @@ public class ExportService {
                 XWPFParagraph p = docx.createParagraph();
                 p.createRun().setText("• [" + m.getStage() + "] " + m.getPhase() + ": " + m.getDescription());
             }
+
+            addDocxParagraph(docx, "Product Requirement Document (PRD)", dto.getPrd());
 
             docx.write(out);
         } catch (Exception e) {
