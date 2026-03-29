@@ -83,7 +83,7 @@ public class GroqService {
                         Map.of("role", "system", "content", SYSTEM_PROMPT),
                         Map.of("role", "user", "content", userPrompt)
                 ),
-                "max_tokens", 2048,
+                "max_tokens", 4096,
                 "temperature", 1.0
         );
 
