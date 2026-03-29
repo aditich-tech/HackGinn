@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,16 +80,35 @@ public class GroqService {
                 "temperature", 1.0
         );
 
-        String rawResponse = groqWebClient.post()
-                .uri("/chat/completions")
-                .header("Authorization", "Bearer " + apiKey)
-                .header("Content-Type", "application/json")
-                .bodyValue(requestBody)
-                .retrieve()
-                .bodyToMono(String.class)
-                .block();
+        try {
+            log.info("Sending request to Groq API with prompt length: {}", userPrompt.length());
+            String rawResponse = groqWebClient.post()
+                    .uri("/chat/completions")
+                    .header("Authorization", "Bearer " + apiKey)
+                    .header("Content-Type", "application/json")
+                    .bodyValue(requestBody)
+                    .retrieve()
+                    .onStatus(status -> status.is4xxClientError() || status.is5xxServerError(), response -> 
+                        response.bodyToMono(String.class).flatMap(body -> {
+                            log.error("Groq API error! Status: {}, Body: {}", response.statusCode(), body);
+                            return Mono.error(org.springframework.web.reactive.function.client.WebClientResponseException.create(
+                                response.statusCode().value(), 
+                                "Groq API error", 
+                                response.headers().asHttpHeaders(), 
+                                body.getBytes(), 
+                                java.nio.charset.StandardCharsets.UTF_8));
+                        })
+                    )
+                    .bodyToMono(String.class)
+                    .block();
 
-        return CompletableFuture.completedFuture(parseGroqResponse(rawResponse));
+            log.info("Successfully received response from Groq API");
+            return CompletableFuture.completedFuture(parseGroqResponse(rawResponse));
+        } catch (Exception e) {
+            log.error("Critical error during Groq API call: {} - {}", e.getClass().getSimpleName(), e.getMessage());
+            // Re-throw to be caught by GlobalExceptionHandler
+            throw new RuntimeException("AI generation failed: " + e.getMessage(), e);
+        }
     }
 
     public String extractThemeData(String rawText) {

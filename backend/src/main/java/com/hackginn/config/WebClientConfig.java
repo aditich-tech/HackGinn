@@ -15,9 +15,30 @@ public class WebClientConfig {
 
     @Bean
     public WebClient groqWebClient() {
+        org.springframework.http.client.reactive.ReactorClientHttpConnector connector = 
+            new org.springframework.http.client.reactive.ReactorClientHttpConnector(
+                reactor.netty.http.client.HttpClient.create()
+                    .option(io.netty.channel.ChannelOption.CONNECT_TIMEOUT_MILLIS, 30000)
+                    .responseTimeout(java.time.Duration.ofSeconds(60))
+                    .secure(sslContextSpec -> {
+                        try {
+                            io.netty.handler.ssl.SslContext sslContext = io.netty.handler.ssl.SslContextBuilder.forClient()
+                                .sslProvider(io.netty.handler.ssl.SslProvider.JDK)
+                                .build();
+                            sslContextSpec.sslContext(sslContext);
+                        } catch (javax.net.ssl.SSLException e) {
+                            throw new RuntimeException("Failed to initialize JDK SSL context", e);
+                        }
+                    })
+                    .doOnConnected(conn -> 
+                        conn.addHandlerLast(new io.netty.handler.timeout.ReadTimeoutHandler(60, java.util.concurrent.TimeUnit.SECONDS))
+                            .addHandlerLast(new io.netty.handler.timeout.WriteTimeoutHandler(60, java.util.concurrent.TimeUnit.SECONDS)))
+            );
+
         return WebClient.builder()
                 .baseUrl(groqBaseUrl)
-                .codecs(config -> config.defaultCodecs().maxInMemorySize(2 * 1024 * 1024))
+                .clientConnector(connector)
+                .codecs(config -> config.defaultCodecs().maxInMemorySize(5 * 1024 * 1024))
                 .build();
     }
 
